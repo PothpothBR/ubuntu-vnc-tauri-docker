@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -85,3 +85,26 @@ ENTRYPOINT [ "/bin/bash", "-c", " \
   /usr/share/novnc/utils/launch.sh --listen $NOVNCPORT --vnc localhost:$VNCPORT \
     --cert /etc/ssl/private/novnc_combined.pem \
 " ]
+
+# setup rust
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s - -y
+
+# setup nvm
+ARG NODE_VERSION=node
+ENV NODE_VERSION=${NODE_VERSION}
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# setup pnpm
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
+
+# install tauri dependencies
+RUN apt install
+  libwebkit2gtk-4.1-dev \
+  build-essential \
+  curl \
+  wget \
+  file \
+  libssl-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev
+  
